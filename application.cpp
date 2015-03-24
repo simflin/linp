@@ -70,7 +70,13 @@ QString Application::getCurrentAnswer() const
 
 bool Application::isAnswerCorrect(const QString &answer)
 {
-    if (this->current_answer.toLower() == answer.toLower() && this->current_answer.length()>0) {
+    if (this->current_answer.length() == 0 || answer.length() == 0) {
+        return false;
+    }
+
+    double res = dist(this->current_answer.toLower().toStdString(), answer.toLower().toStdString());
+    if (res > MIN_COS_VALUE || res == -1 && this->current_answer.toLower() == answer.toLower()) {
+//    if (this->current_answer.toLower() == answer.toLower()) {
         if (this->next_question_number_index > 0 &&
                 (this->last_correct_answer_index == -1 ||
                     this->last_correct_answer_index != this->next_question_number_index - 1)) {
