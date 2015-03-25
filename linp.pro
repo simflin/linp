@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
-QT += sql
+QT += core gui widgets sql
 
 TARGET = linp
 TEMPLATE = app

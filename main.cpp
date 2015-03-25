@@ -1,10 +1,11 @@
-#include <QtGui/QApplication>
-#include "mainwindow.h"
-#include "linp_exception.h"
+#include <QApplication>
 #include <QtGlobal>
 #include <QMessageBox>
 #include <QString>
 #include <iostream>
+
+#include "mainwindow.h"
+#include "linp_exception.h"
 
 const unsigned SEED = 1;
 
