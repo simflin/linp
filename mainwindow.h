@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "application.h"
+#include "linp_core.h"
 
 namespace Ui {
     class MainWindow;
@@ -11,7 +11,7 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-    Application *application;
+    LinpCore *application;
 
 public:
     explicit MainWindow(QWidget *parent = 0);

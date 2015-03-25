@@ -1,9 +1,9 @@
-#include "application.h"
+#include "linp_core.h"
 #include <QtGlobal>
 #include <set>
 #include <iostream>
 
-Application::Application()
+LinpCore::LinpCore()
 {
     this->database = new Database();
     this->QUESTIONS_NUMBER = this->database->getQuestionsNumber();
@@ -12,12 +12,12 @@ Application::Application()
     createNewGame();
 }
 
-Application::~Application()
+LinpCore::~LinpCore()
 {
     delete this->database;
 }
 
-void Application::createNewGame()
+void LinpCore::createNewGame()
 {
     this->questions_numbers.clear();
     std::set<int> numbers;
@@ -32,7 +32,7 @@ void Application::createNewGame()
     this->last_correct_answer_index = -1;
 }
 
-uint32_t Application::getCurrentQuestionNumber() const
+uint32_t LinpCore::getCurrentQuestionNumber() const
 {
     if (next_question_number_index) {
         return questions_numbers[next_question_number_index - 1];
@@ -41,17 +41,17 @@ uint32_t Application::getCurrentQuestionNumber() const
     }
 }
 
-unsigned int Application::getCorrectAnswersNumber() const
+unsigned int LinpCore::getCorrectAnswersNumber() const
 {
     return this->correct_answers_number;
 }
 
-unsigned int Application::getGameSize() const
+unsigned int LinpCore::getGameSize() const
 {
     return this->GAME_SIZE;
 }
 
-QString Application::getNextQuestion() throw(ApplicationException)
+QString LinpCore::getNextQuestion() throw(ApplicationException)
 {
     if (next_question_number_index == GAME_SIZE) {
         throw ApplicationException("The game is over", false);
@@ -64,12 +64,12 @@ QString Application::getNextQuestion() throw(ApplicationException)
     return this->current_question;
 }
 
-QString Application::getCurrentAnswer() const
+QString LinpCore::getCurrentAnswer() const
 {
     return this->current_answer;
 }
 
-bool Application::isAnswerCorrect(const QString &answer)
+bool LinpCore::isAnswerCorrect(const QString &answer)
 {
     if (this->current_answer.length() == 0 || answer.length() == 0) {
         return false;

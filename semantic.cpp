@@ -18,6 +18,8 @@ SemanticComparator::SemanticComparator()
 int SemanticComparator::init()
 {
     const std::string WORD_PROJECTIONS_FILE_NAME = "./vectors.bin";
+    vocabulary_words_number = 0;
+    word_vector_size = 0;
 
     FILE *word_projections_file = fopen(WORD_PROJECTIONS_FILE_NAME.c_str(), "rb");
     if (word_projections_file == NULL) {

@@ -17,14 +17,14 @@ SOURCES += main.cpp\
     database.cpp \
     semantic.cpp \
     speech_to_text.cpp \
-    application.cpp \
-    linp_exception.cpp
+    linp_exception.cpp \
+    linp_core.cpp
 
 HEADERS  += mainwindow.h \
     database.h \
     semantic.h \
     speech_to_text.h \
-    application.h \
-    linp_exception.h
+    linp_exception.h \
+    linp_core.h
 
 FORMS    += mainwindow.ui

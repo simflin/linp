@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    application = new Application;
+    application = new LinpCore;
     on_nextQuestionButton_clicked();
 }
 

@@ -10,7 +10,7 @@
 #include "speech_to_text.h"
 #include "linp_exception.h"
 
-class Application
+class LinpCore
 {
     QString current_answer;
     QString current_question;
@@ -25,8 +25,8 @@ class Application
     SemanticComparator semantic_comparator;
 
 public:
-    Application();
-    ~Application();
+    LinpCore();
+    ~LinpCore();
     QString getNextQuestion() throw(ApplicationException);
     QString getCurrentAnswer() const;
     uint32_t getCurrentQuestionNumber() const;
