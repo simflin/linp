@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <QMessageBox>
 #include <QString>
+#include <iostream>
 
 const unsigned SEED = 1;
 
@@ -19,5 +20,6 @@ int main(int argc, char *argv[])
         QMessageBox::critical(NULL, "Error!", QString(e.what()) + " Program will be terminated.");
         return 0;
     }
+
     return -1;
 }
