@@ -89,10 +89,6 @@ std::vector<size_t> SemanticComparator::createVectorRepresentation(std::string p
         phrase.erase(lf_position);
     }
 
-    QString qphrase = QString(phrase.c_str()).simplified();
-    phrase = qphrase.split(QRegExp("[!\"#$%&()*+,\-./:;<=>?@\[\\\]^_`{|}~]")).join("").toStdString();
-
-
     std::vector<std::string> phrase_words;
     size_t space_position;
     while ((space_position = phrase.find(' ')) != std::string::npos) {

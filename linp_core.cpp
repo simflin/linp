@@ -69,13 +69,19 @@ QString LinpCore::getCurrentAnswer() const
     return this->current_answer;
 }
 
-bool LinpCore::isAnswerCorrect(const QString &answer)
+bool LinpCore::isAnswerCorrect(QString answer)
 {
     if (this->current_answer.length() == 0 || answer.length() == 0) {
         return false;
     }
 
-    double res = semantic_comparator.distance(this->current_answer.toLower().toStdString(),
+
+    answer = answer.simplified();
+    answer = answer.split(QRegExp("[!\"#$%&()*+,\-./:;<=>?@\[\\\]^_`{|}~]")).join("");
+    QString right_answer = this->current_answer.simplified();
+    right_answer = right_answer.split(QRegExp("[!\"#$%&()*+,\-./:;<=>?@\[\\\]^_`{|}~]")).join("");
+
+    double res = semantic_comparator.distance(right_answer.toLower().toStdString(),
                                               answer.toLower().toStdString());
 
     std::cout << "RES: " << res << std::endl;

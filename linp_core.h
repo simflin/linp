@@ -30,7 +30,7 @@ public:
     QString getNextQuestion() throw(ApplicationException);
     QString getCurrentAnswer() const;
     uint32_t getCurrentQuestionNumber() const;
-    bool isAnswerCorrect(const QString &answer);
+    bool isAnswerCorrect(QString answer);
     void createNewGame();
     unsigned int getCorrectAnswersNumber() const;
     unsigned int getGameSize() const;
