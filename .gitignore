@@ -1,0 +1,6 @@
+linp
+clues.db
+Makefile
+*.o
+ui_*
+moc_*
