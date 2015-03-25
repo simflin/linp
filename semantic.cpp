@@ -90,7 +90,7 @@ std::vector<size_t> SemanticComparator::createVectorRepresentation(std::string p
     }
 
     QString qphrase = QString(phrase.c_str()).simplified();
-    phrase = qphrase.split(QRegExp("[!\"#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]")).join("").toStdString();
+    phrase = qphrase.split(QRegExp("[!\"#$%&()*+,\-./:;<=>?@\[\\\]^_`{|}~]")).join("").toStdString();
 
 
     std::vector<std::string> phrase_words;
