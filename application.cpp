@@ -7,6 +7,7 @@ Application::Application()
 {
     this->database = new Database();
     this->QUESTIONS_NUMBER = this->database->getQuestionsNumber();
+    semantic_comparator.init();
 
     createNewGame();
 }
@@ -74,7 +75,10 @@ bool Application::isAnswerCorrect(const QString &answer)
         return false;
     }
 
-    double res = dist(this->current_answer.toLower().toStdString(), answer.toLower().toStdString());
+    double res = semantic_comparator.distance(this->current_answer.toLower().toStdString(),
+                                              answer.toLower().toStdString());
+
+    std::cout << "RES: " << res << std::endl;
     if (res > MIN_COS_VALUE || res == -1 && this->current_answer.toLower() == answer.toLower()) {
 //    if (this->current_answer.toLower() == answer.toLower()) {
         if (this->next_question_number_index > 0 &&

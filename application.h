@@ -22,6 +22,7 @@ class Application
     static const unsigned int GAME_SIZE = 10;
     unsigned int correct_answers_number;
     int last_correct_answer_index;
+    SemanticComparator semantic_comparator;
 
 public:
     Application();

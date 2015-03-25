@@ -3,24 +3,19 @@
 
 
 #include "semantic.h"
-
-//SemanticComparator::SemanticComparator()
-//{
-//}
-
-
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
+
 #include <string>
 #include <vector>
-
-const long long MAX_SIZE = 2000;            // max length of strings
-const long long CLOSEST_WORDS_NUMBER = 40;  // number of closest words that will be shown
-const long long MAX_WORD_LENGTH = 50;       // max length of vocabulary entries
+#include <iostream>
+#include <stdio.h>
 
 
-double dist(const std::string &correct_string, const std::string &users_string)
+SemanticComparator::SemanticComparator()
+{
+}
+
+int SemanticComparator::init()
 {
     const std::string WORD_PROJECTIONS_FILE_NAME = "./vectors.bin";
 
@@ -30,149 +25,169 @@ double dist(const std::string &correct_string, const std::string &users_string)
         return -1;
     }
 
-    long long vocabulary_words_number, word_vector_size;
     fscanf(word_projections_file, "%lld", &vocabulary_words_number);
     fscanf(word_projections_file, "%lld", &word_vector_size);
-    std::string vocabulary(vocabulary_words_number * MAX_WORD_LENGTH, '\0');
 
-    std::vector<float> M(vocabulary_words_number * word_vector_size);
+    // fill words_vectors and vocabulary
+    words_vectors = std::vector<std::vector<float> >(vocabulary_words_number,
+                                       std::vector<float>(word_vector_size));
+    for (long long current_word_index = 0; current_word_index < vocabulary_words_number;
+         current_word_index++) {
 
-    for (long long b = 0; b < vocabulary_words_number; b++) {
-        long long a = 0;
+        std::string word;
         while (1) {
-            vocabulary[b * MAX_WORD_LENGTH + a] = fgetc(word_projections_file);
-            if (feof(word_projections_file) || (vocabulary[b * MAX_WORD_LENGTH + a] == ' '))
+            char ch = fgetc(word_projections_file);
+            if (feof(word_projections_file) || ch == ' ')
                 break;
-            if ((a < MAX_WORD_LENGTH) && (vocabulary[b * MAX_WORD_LENGTH + a] != '\n'))
-                a++;
+            if (ch == '\n')
+                continue;
+            word += ch;
         }
-        vocabulary[b * MAX_WORD_LENGTH + a] = 0;
+        vocabulary.push_back(word);
 
-        for (a = 0; a < word_vector_size; a++) {
-            fread(&M[a + b * word_vector_size], sizeof(float), 1, word_projections_file);
+        for (long long a = 0; a < word_vector_size; a++) {
+            fread(&(words_vectors[current_word_index][a]), sizeof(float), 1, word_projections_file);
         }
-        float len = 0;
-        for (a = 0; a < word_vector_size; a++)
-            len += M[a + b * word_vector_size] * M[a + b * word_vector_size];
-        len = sqrt(len);
-        for (a = 0; a < word_vector_size; a++)
-            M[a + b * word_vector_size] /= len;
+        normalize(words_vectors[current_word_index]);
     }
     fclose(word_projections_file);
 
-    long long aa = 0;
-    char st1[MAX_SIZE];
-    while (1) {
-        st1[aa] = correct_string[aa];
-        if ((st1[aa] == '\n') || (aa >= MAX_SIZE - 1)) {
-            st1[aa] = 0;
-            break;
-        }
-        aa++;
+    return 0;
+}
+
+void SemanticComparator::normalize(std::vector<float> &vector)
+{
+    float norm = sqrt(compute_vector_distance(vector, vector));
+    if (norm < 0.001) { //FIXME
+        return;
+    }
+    for (size_t i = 0; i < vector.size(); i++) {
+        vector[i] /= norm;
+    }
+    return;
+}
+
+float SemanticComparator::compute_vector_distance(const std::vector<float> &first_vector,
+                                                 const std::vector<float> &second_vector)
+{
+    float distance = 0;
+    for (size_t i = 0; i < first_vector.size(); i++) {
+        distance += first_vector[i] * second_vector[i];
+    }
+    return distance;
+}
+
+std::vector<size_t> SemanticComparator::createVectorRepresentation(std::string phrase,
+                                                                   int &status) const
+{
+    size_t lf_position = phrase.find('\n');
+    if (lf_position != std::string::npos) {
+        phrase.erase(lf_position);
     }
 
-    long long cn = 0;
-    long long bb = 0;
-    long long cc = 0;
-    char st[100][MAX_SIZE];
-    while (1) {
-        st[cn][bb] = st1[cc];
-        bb++;
-        cc++;
-        st[cn][bb] = 0;
-        if (st1[cc] == 0)
-            break;
-        if (st1[cc] == ' ') {
-            cn++;
-            bb = 0;
-            cc++;
-        }
+    std::vector<std::string> phrase_words;
+    size_t space_position;
+    while ((space_position = phrase.find(' ')) != std::string::npos) {
+        phrase_words.push_back(phrase.substr(0, space_position));
+        phrase.erase(0, space_position + 1);
     }
-    cn++;
+    phrase_words.push_back(phrase);
 
-    long long bi[100];
-    long long b;
-    for (long long a = 0; a < cn; a++) {
-        for (b = 0; b < vocabulary_words_number; b++)
-            if (!strcmp(&(vocabulary.c_str()[b * MAX_WORD_LENGTH]), st[a]))
+    std::vector<size_t> phrase_words_positions;
+    for (size_t a = 0; a < phrase_words.size(); a++) {
+        size_t b;
+        for (b = 0; b < vocabulary.size(); b++) {
+            if (vocabulary[b] == phrase_words[a]) {   // FIXME: toLower
                 break;
-        if (b == vocabulary_words_number)
-            b = -1;
-        bi[a] = b;
-        //printf("\nWord: %s  Position in vocabulary: %lld\n", st[a], bi[a]);
-        if (b == -1) {
-            printf("Out of dictionary word!\n");
-            break;
+            }
         }
-    }
-    if (b == -1) {
-        printf("Can't process input!");
-        return -1;
-    }
-
-    float vec[MAX_SIZE];
-    for (long long a = 0; a < word_vector_size; a++)
-        vec[a] = 0;
-    for (long long d = 0; d < cn; d++) {
-        if (bi[d] == -1)
-            continue;
-        for (long long a = 0; a < word_vector_size; a++)
-            vec[a] += M[a + bi[d] * word_vector_size];
+        if (b == vocabulary.size()) {
+            std::cout << "Out of dictionary word!\nCan't process input!\n";
+            status = -1;
+            return std::vector<size_t>();
+        }
+        phrase_words_positions.push_back(b);
     }
 
+    status = 0;
+    return phrase_words_positions;
 
-    float len = 0;
-    for (long long a = 0; a < word_vector_size; a++)
-        len += vec[a] * vec[a];
-    len = sqrt(len);
-    for (long long a = 0; a < word_vector_size; a++)
-        vec[a] /= len;
+    // FIXME this code leads to segfault ????
+//    std:;vector<float> phrase_representation(word_vector_size, 0);
+//    for (size_t i = 0; i < phrase_words_positions.size(); ++i) {
+//        for (size_t j = 0; j < word_vector_size; ++j) {
+//            phrase_representation[j] += words_vectors[phrase_words_positions[i]][j];
+//        }
+//    }
+//    return phrase_representation;
+}
 
-
-    std::vector<float> closest_words_distances(CLOSEST_WORDS_NUMBER, -1);
-
-    std::string closest_words[CLOSEST_WORDS_NUMBER];
-    for (long long a = 0; a < CLOSEST_WORDS_NUMBER; a++) {
-        closest_words[a] = std::string(MAX_SIZE, '\0');
-    }
-
+void SemanticComparator::findNClosestWords(const std::vector<float> &target_word_representation,
+                                           std::vector<std::string> &closest_words,
+                                           std::vector<float> &closest_words_distances,
+                                           const size_t N) const
+{
+    closest_words_distances = std::vector<float> (N, -1);
+    closest_words = std::vector<std::string>(N);
     for (long long c = 0; c < vocabulary_words_number; c++) {
-        long long a = 0;
-        for (long long d = 0; d < cn; d++)
-            if (bi[d] == c)
-                a = 1;
-        if (a == 1)
-            continue;
-        float dist = 0;
-        for (long long a = 0; a < word_vector_size; a++)
-            dist += vec[a] * M[a + c * word_vector_size];
-        for (long long a = 0; a < CLOSEST_WORDS_NUMBER; a++) {
+        // COMMENTED OUT: sense of this code is not obvious;
+        // however after refactoring we have no information about words in target phrase
+        //bool is_vocabulary_word_in_correct_string = false;
+        //for (long long d = 0; d < correct_string_words_positions.size(); d++) {
+        //    if (correct_string_words_positions[d] == c) {
+        //        is_vocabulary_word_in_correct_string = true;
+        //        break;
+        //    }
+        //}
+        //if (is_vocabulary_word_in_correct_string) {
+        //    continue;
+        //}
+        float dist = compute_vector_distance(target_word_representation, words_vectors[c]);
+        for (long long a = 0; a < closest_words.size(); a++) {
             if (dist > closest_words_distances[a]) {
-                for (long long d = CLOSEST_WORDS_NUMBER - 1; d > a; d--) {
+                for (long long d = closest_words.size() - 1; d > a; d--) {
                     closest_words_distances[d] = closest_words_distances[d - 1];
                     closest_words[d] = closest_words[d - 1];
                 }
                 closest_words_distances[a] = dist;
-                closest_words[a] = vocabulary.substr(c * MAX_WORD_LENGTH);
+                closest_words[a] = vocabulary[c];
                 break;
             }
         }
     }
+    return;
+}
 
-    int counter = 0;
-    for (long long  a = 0; a < CLOSEST_WORDS_NUMBER; a++) {
-        if (closest_words[a] == users_string) {
-            printf("Got it!\n");
-            //printf("Resulting word is: %s\n",bestw[a]);
-            printf("Cosine distance is: %f\n",closest_words_distances[a]);
-            counter++;
-            return closest_words_distances[a];
-        }
-    }
-    if (counter == 0) {
-        printf("Sorry, wrong guess!\n");
+double SemanticComparator::distance(const std::string &correct_string,
+                                    const std::string &users_string)
+{
+    int status = 0;
+    std::vector<size_t> correct_string_words_positions = createVectorRepresentation(correct_string,
+                                                                                    status);
+    if (status != 0) {
         return -1;
     }
+    std::vector<float> correct_string_representation(word_vector_size, 0);
+    for (size_t i = 0; i < correct_string_words_positions.size(); ++i) {
+        for (size_t j = 0; j < word_vector_size; ++j) {
+            correct_string_representation[j] += words_vectors[correct_string_words_positions[i]][j];
+        }
+    }
 
-    return -1;
+    normalize(correct_string_representation);
+
+    correct_string_words_positions = createVectorRepresentation(users_string, status);
+    if (status != 0) {
+        return -1;
+    }
+    std::vector<float> users_string_vector_repr(word_vector_size, 0);
+    for (size_t i = 0; i < correct_string_words_positions.size(); ++i) {
+        for (size_t j = 0; j < word_vector_size; ++j) {
+            users_string_vector_repr[j] += words_vectors[correct_string_words_positions[i]][j];
+        }
+    }
+
+    normalize(users_string_vector_repr);
+
+    return compute_vector_distance(correct_string_representation, users_string_vector_repr);
 }
