@@ -32,11 +32,11 @@ QuestionPair Database::getQuestionPair(uint32_t number)
     QSqlQuery query("SELECT clue, answer FROM documents WHERE id = " + QString::number(number));
     if (!query.isActive() || !query.first()) {
         std::cout << "ERROR!!! " << number << std::endl; //FIXME
-        return QuestionPair{"", ""};
+        return QuestionPair("", "");
     }
     QSqlRecord record = query.record();
 
-    return QuestionPair{query.value(record.indexOf("clue")).toString(),
-                        query.value(record.indexOf("answer")).toString()};
+    return QuestionPair(query.value(record.indexOf("clue")).toString(),
+                        query.value(record.indexOf("answer")).toString());
 }
 

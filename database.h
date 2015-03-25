@@ -10,6 +10,9 @@
 struct QuestionPair {
     QString question;
     QString answer;
+
+    QuestionPair(const QString &q, const QString & a) : question(q), answer(a) {}
+    QuestionPair() {}
 };
 
 class Database
