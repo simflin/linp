@@ -85,7 +85,7 @@ bool LinpCore::isAnswerCorrect(QString answer)
                                               answer.toLower().toStdString());
 
     std::cout << "RES: " << res << std::endl;
-    if (res > MIN_COS_VALUE || res == -1 && this->current_answer.toLower() == answer.toLower()) {
+    if (res > MIN_COS_VALUE || (res == -1 && this->current_answer.toLower() == answer.toLower())) {
 //    if (this->current_answer.toLower() == answer.toLower()) {
         if (this->next_question_number_index > 0 &&
                 (this->last_correct_answer_index == -1 ||

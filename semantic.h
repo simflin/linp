@@ -9,7 +9,7 @@ class SemanticComparator
     std::vector<std::string> vocabulary;
     std::vector<std::vector<float> > words_vectors;
     long long vocabulary_words_number;
-    long long word_vector_size;
+    unsigned long long word_vector_size;
 
     static void normalize(std::vector<float> &vector);
     static float compute_vector_distance(const std::vector<float> &first_vector,

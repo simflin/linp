@@ -49,7 +49,7 @@ int SemanticComparator::init()
         }
         vocabulary.push_back(word);
 
-        for (long long a = 0; a < word_vector_size; a++) {
+        for (unsigned long long a = 0; a < word_vector_size; a++) {
             fread(&(words_vectors[current_word_index][a]), sizeof(float), 1, word_projections_file);
         }
         normalize(words_vectors[current_word_index]);
@@ -147,9 +147,9 @@ void SemanticComparator::findNClosestWords(const std::vector<float> &target_word
         //    continue;
         //}
         float dist = compute_vector_distance(target_word_representation, words_vectors[c]);
-        for (long long a = 0; a < closest_words.size(); a++) {
+        for (unsigned long long a = 0; a < closest_words.size(); a++) {
             if (dist > closest_words_distances[a]) {
-                for (long long d = closest_words.size() - 1; d > a; d--) {
+                for (unsigned long long d = closest_words.size() - 1; d > a; d--) {
                     closest_words_distances[d] = closest_words_distances[d - 1];
                     closest_words[d] = closest_words[d - 1];
                 }

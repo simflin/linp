@@ -18,7 +18,7 @@ class LinpCore
     int QUESTIONS_NUMBER;
     static const double MIN_COS_VALUE = 0.8;
     std::vector<uint32_t> questions_numbers;
-    size_t next_question_number_index;
+    int next_question_number_index;
     static const unsigned int GAME_SIZE = 10;
     unsigned int correct_answers_number;
     int last_correct_answer_index;
