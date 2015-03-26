@@ -22,6 +22,8 @@ private slots:
 
     void on_checkAnswerButton_clicked();
 
+    void on_customQuestionNumberButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -29,6 +29,9 @@ public:
     ~LinpCore();
     QString getNextQuestion() throw(ApplicationException);
     QString getCurrentAnswer() const;
+    QString getCurrentQuestion() const {
+        return current_question;
+    }
     uint32_t getCurrentQuestionNumber() const;
     bool isAnswerCorrect(QString answer);
     void createNewGame();
@@ -37,6 +40,10 @@ public:
     int getCurrentQuestionIndex() const {
         return next_question_number_index;
     }
+    int getMaxQuestionNumber() const {
+        return QUESTIONS_NUMBER;
+    }
+    void changeCurrentQuestionNumber(int number);
 };
 
 #endif // APPLICATION_H

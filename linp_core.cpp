@@ -64,6 +64,22 @@ QString LinpCore::getNextQuestion() throw(ApplicationException)
     return this->current_question;
 }
 
+
+void LinpCore::changeCurrentQuestionNumber(int number)
+{
+    if (next_question_number_index == GAME_SIZE) {
+        throw ApplicationException("The game is over", false);
+    }
+    questions_numbers[next_question_number_index-1] = number;
+    QuestionPair question_pair = this->database->getQuestionPair(number);
+    this->current_answer = question_pair.answer;
+    this->current_question = question_pair.question;
+    if (last_correct_answer_index == next_question_number_index - 1) {
+        last_correct_answer_index -= 1;
+        correct_answers_number -= 1;
+    }
+}
+
 QString LinpCore::getCurrentAnswer() const
 {
     return this->current_answer;

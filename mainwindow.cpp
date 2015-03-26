@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "linp_exception.h"
 #include <QMessageBox>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -61,4 +62,33 @@ void MainWindow::on_checkAnswerButton_clicked()
     this->statusBar()->showMessage(QString("Correct answers: ") +
                                    QString::number(application->getCorrectAnswersNumber()) + "/" +
                                    QString::number(application->getGameSize()));
+}
+
+void MainWindow::on_customQuestionNumberButton_clicked()
+{
+    bool is_ok = false;
+    int question_number = QInputDialog::getInt(this, tr("Custom question number"),
+                                        tr("Enter the desirable question number:"), 1, 1,
+                                        application->getMaxQuestionNumber(), 1, &is_ok);
+    if (!is_ok) {
+        return;
+    }
+    application->changeCurrentQuestionNumber(question_number);
+
+    ui->questionTextEdit->setText(application->getCurrentQuestion());
+
+    ui->answerTextEdit->clear();
+    ui->answerStatusLabel->clear();
+    ui->rightAnswerTextEdit->clear();
+    ui->questionLabel->setText(QString("Question ") +
+                               QString::number(application->getCurrentQuestionIndex()) +
+                               "/" +
+                               QString::number(application->getGameSize()) +
+                               " (#" +
+                               QString::number(application->getCurrentQuestionNumber()) +
+                               "):");
+    this->statusBar()->showMessage(QString("Correct answers: ") +
+                                   QString::number(application->getCorrectAnswersNumber()) + "/" +
+                                   QString::number(application->getGameSize()));
+
 }
